@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#324AB6">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Supervisión">
+<meta name="description" content="Registro de visitas a centros FOOax. Dirección y asesoras.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>FOOax — Supervisión de Centros</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --mag:#F1228E;--mag-l:#FDE8F4;--mag-d:#C0006E;
+  --ate:#FD6E29;--ate-l:#FFF0E8;
+  --rio:#324AB6;--rio-l:#EBF0FC;
+  --riq:#F2BB06;--riq-l:#FEF8E0;
+  --green:#00A86B;--green-l:#E1F5EE;
+  --amber:#F59E0B;--amber-l:#FEF3C7;
+  --red:#EF4444;--red-l:#FEE2E2;
+  --grad:linear-gradient(135deg,#F1228E,#FD6E29,#F2BB06);
+  --white:#fff;--bg:#F5F0FA;--text:#1A1A1A;--text2:#555;--text3:#999;
+  --border:#EAE0F5;--radius:16px;--radius-sm:10px;--shadow:0 2px 16px rgba(241,34,142,.08);
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;color:var(--text)}
+
+/* ── HEADER ── */
+.app-header{background:var(--grad);padding:20px 20px 36px;position:relative;overflow:hidden}
+.app-header::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='160' cy='40' r='60' fill='rgba(255,255,255,.06)'/%3E%3Ccircle cx='20' cy='160' r='40' fill='rgba(255,255,255,.04)'/%3E%3C/svg%3E");background-size:cover}
+.app-header::after{content:'';position:absolute;bottom:-20px;left:0;right:0;height:40px;background:var(--bg);border-radius:40px 40px 0 0}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;position:relative}
+.logo{font-size:16px;font-weight:800;color:#fff}
+.header-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
+.header-title{font-size:20px;font-weight:800;color:#fff;position:relative;margin-bottom:4px}
+.header-sub{font-size:12px;color:rgba(255,255,255,.85);position:relative}
+
+/* ── NAV ── */
+.nav{display:flex;gap:0;background:var(--white);border-radius:var(--radius);margin:0 16px 16px;box-shadow:var(--shadow);overflow:hidden;position:relative;z-index:1}
+.nav-btn{flex:1;padding:10px 4px;border:none;background:transparent;font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;color:var(--text3);cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav-btn.active{color:var(--mag);background:var(--mag-l)}
+.nav-icon{font-size:18px}
+
+/* ── SCREENS ── */
+.screen{display:none;padding:0 16px 100px}
+.screen.active{display:block}
+
+/* ── CARDS ── */
+.card{background:var(--white);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.card-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+/* ── FORM ── */
+.field{margin-bottom:14px}
+.field-label{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.field-input{width:100%;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:600;color:var(--text);outline:none;background:#FAFAFA;transition:border .2s}
+.field-input:focus{border-color:var(--mag);background:#fff}
+textarea.field-input{resize:none;line-height:1.5}
+select.field-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+
+/* ── SEMÁFORO ── */
+.semaforo{display:flex;gap:8px}
+.sem-opt{flex:1;padding:10px 6px;border-radius:var(--radius-sm);border:2px solid var(--border);background:#fff;cursor:pointer;text-align:center;transition:all .2s;font-family:'Nunito',sans-serif}
+.sem-opt:hover{transform:translateY(-2px)}
+.sem-opt.sel-verde{border-color:var(--green);background:var(--green-l)}
+.sem-opt.sel-amarillo{border-color:var(--amber);background:var(--amber-l)}
+.sem-opt.sel-rojo{border-color:var(--red);background:var(--red-l)}
+.sem-icon{font-size:22px;margin-bottom:4px}
+.sem-label{font-size:10px;font-weight:800;color:var(--text2)}
+
+/* ── CHECKLIST ── */
+.check-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:.5px solid var(--border)}
+.check-item:last-child{border-bottom:none}
+.check-box{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s;background:#fff}
+.check-box.checked{background:var(--green);border-color:var(--green)}
+.check-box.checked::after{content:'✓';color:#fff;font-size:13px;font-weight:800}
+.check-text{font-size:13px;font-weight:600;color:var(--text);flex:1;line-height:1.4}
+.check-sem{display:flex;gap:5px;flex-shrink:0}
+.cs-dot{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;font-size:10px;background:#fff}
+.cs-dot.active-g{background:var(--green);border-color:var(--green);color:#fff}
+.cs-dot.active-a{background:var(--amber);border-color:var(--amber);color:#fff}
+.cs-dot.active-r{background:var(--red);border-color:var(--red);color:#fff}
+
+/* ── GPS ── */
+.gps-card{background:var(--rio-l);border:1px solid #C5D4F5;border-radius:var(--radius-sm);padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s}
+.gps-card:hover{background:#d8e4fb}
+.gps-icon{font-size:24px;flex-shrink:0}
+.gps-info{flex:1}
+.gps-title{font-size:13px;font-weight:700;color:var(--rio)}
+.gps-coords{font-size:11px;color:var(--text3);margin-top:2px;font-family:monospace}
+.gps-btn{font-size:11px;font-weight:700;padding:5px 10px;border-radius:8px;border:none;background:var(--rio);color:#fff;cursor:pointer;font-family:'Nunito',sans-serif}
+
+/* ── CONTADORES ── */
+.counter-row{display:flex;align-items:center;gap:12px}
+.counter-btn{width:36px;height:36px;border-radius:50%;border:none;font-size:20px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.counter-minus{background:var(--red-l);color:var(--red)}
+.counter-plus{background:var(--green-l);color:var(--green)}
+.counter-val{font-size:28px;font-weight:900;color:var(--text);min-width:48px;text-align:center}
+.counter-label{font-size:12px;color:var(--text3)}
+
+/* ── FOTO ── */
+.foto-area{border:2px dashed var(--border);border-radius:var(--radius-sm);padding:24px;text-align:center;cursor:pointer;transition:all .2s;background:#FAFAFA}
+.foto-area:hover{border-color:var(--mag);background:var(--mag-l)}
+.foto-area.has-foto{border-style:solid;border-color:var(--green)}
+.foto-preview{width:100%;max-height:200px;object-fit:cover;border-radius:var(--radius-sm);display:none}
+.foto-placeholder{pointer-events:none}
+.foto-icon{font-size:36px;margin-bottom:8px}
+.foto-text{font-size:13px;font-weight:700;color:var(--text2)}
+.foto-sub{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* ── BTN PRINCIPAL ── */
+.btn-main{width:100%;padding:15px;border-radius:var(--radius-sm);border:none;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;color:#fff;cursor:pointer;background:var(--grad);box-shadow:0 4px 20px rgba(241,34,142,.3);transition:all .2s;margin-top:4px}
+.btn-main:active{transform:scale(.98)}
+.btn-main:disabled{opacity:.5;cursor:default}
+
+/* ── HISTORIAL ── */
+.visita-card{background:var(--white);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);cursor:pointer;transition:all .15s}
+.visita-card:hover{transform:translateY(-2px)}
+.visita-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.visita-semaforo{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.visita-centro{font-size:14px;font-weight:800;color:var(--text);flex:1}
+.visita-fecha{font-size:11px;color:var(--text3);font-weight:600}
+.visita-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.vtag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px}
+.visita-obs{font-size:12px;color:var(--text2);line-height:1.5;font-style:italic}
+.visita-meta{display:flex;gap:12px;margin-top:8px;padding-top:8px;border-top:.5px solid var(--border)}
+.vmeta-item{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+
+/* ── RESUMEN ── */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-box{background:var(--white);border-radius:var(--radius);padding:14px;text-align:center;box-shadow:var(--shadow)}
+.stat-val{font-size:28px;font-weight:900;color:var(--text);line-height:1}
+.stat-label{font-size:11px;color:var(--text3);margin-top:4px;font-weight:600}
+.sem-bar{display:flex;height:12px;border-radius:20px;overflow:hidden;margin-bottom:8px}
+.sem-bar-seg{transition:width .5s}
+
+/* ── REPORTES ── */
+.reporte-filtros{background:var(--white);border-radius:var(--radius);padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+.filtro-row{display:flex;gap:8px;align-items:center}
+.filtro-label{font-size:11px;font-weight:700;color:var(--text2);min-width:56px;text-transform:uppercase;letter-spacing:.04em}
+.filtro-sel{flex:1;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;color:var(--text);background:#FAFAFA;outline:none}
+.filtro-sel:focus{border-color:var(--mag)}
+.grafica-wrap{background:var(--white);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.grafica-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+/* Barras horizontales */
+.barra-row{margin-bottom:12px}
+.barra-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.barra-nombre{font-size:13px;font-weight:700;color:var(--text)}
+.barra-val{font-size:12px;font-weight:700;color:var(--text2)}
+.barra-track{background:var(--bg);border-radius:20px;height:10px;overflow:hidden;margin-bottom:4px}
+.barra-fill{height:100%;border-radius:20px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.barra-sub{display:flex;gap:8px;font-size:11px;color:var(--text3)}
+/* Semáforo stacked */
+.sem-stack{height:18px;border-radius:20px;overflow:hidden;display:flex;margin-bottom:6px;transition:all .5s}
+.sem-stack-seg{height:100%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;transition:width .6s}
+/* Métricas */
+.metricas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.metrica{background:var(--white);border-radius:var(--radius);padding:12px 8px;text-align:center;box-shadow:var(--shadow)}
+.metrica-val{font-size:22px;font-weight:900;line-height:1;color:var(--text)}
+.metrica-label{font-size:10px;color:var(--text3);margin-top:4px;font-weight:600;line-height:1.3}
+/* Centros tabla */
+.centro-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:.5px solid var(--border);font-size:12px}
+.centro-row:last-child{border-bottom:none}
+.centro-pos{min-width:20px;font-weight:900;color:var(--text3);font-size:13px}
+.centro-nombre{flex:1;font-weight:700;color:var(--text)}
+.centro-asesor{font-size:10px;color:var(--text3);margin-top:1px}
+.centro-sem{font-size:16px;flex-shrink:0}
+.btn-export-rep{width:100%;padding:14px;border-radius:var(--radius-sm);border:none;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;color:#fff;cursor:pointer;background:linear-gradient(135deg,#059669,#324AB6);box-shadow:0 4px 16px rgba(5,150,105,.25);margin-bottom:8px}
+.btn-export-rep2{width:100%;padding:12px;border-radius:var(--radius-sm);border:1.5px solid var(--mag);background:var(--mag-l);font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;color:var(--mag);cursor:pointer}
+.detail-ov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.detail-ov.open{display:flex}
+.detail-box{background:var(--bg);border-radius:var(--radius) var(--radius) 0 0;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;padding:20px 20px 40px}
+.detail-handle{width:40px;height:4px;background:var(--border);border-radius:20px;margin:0 auto 16px}
+.detail-close{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:var(--text3)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:#1A1A1A;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;opacity:0;transition:all .3s;z-index:500;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:48px 20px;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-text{font-size:14px;font-weight:700}
+.empty-sub{font-size:12px;margin-top:6px}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="header-top">
+    <div class="logo">🌸 FOOax</div>
+    <div class="header-badge" id="badge-fecha"></div>
+  </div>
+  <div class="header-title">Supervisión de Centros</div>
+  <div class="header-sub">Dirección · Supervisión de asesoras</div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="nav-btn active" id="nav-nueva" onclick="setNav('nueva')">
+    <span class="nav-icon">📋</span>Nueva visita
+  </button>
+  <button class="nav-btn" id="nav-historial" onclick="setNav('historial')">
+    <span class="nav-icon">📁</span>Historial
+  </button>
+  <button class="nav-btn" id="nav-resumen" onclick="setNav('resumen')">
+    <span class="nav-icon">📊</span>Resumen
+  </button>
+  <button class="nav-btn" id="nav-reportes" onclick="setNav('reportes')">
+    <span class="nav-icon">📈</span>Reportes
+  </button>
+</div>
+
+<!-- ════════════════════════ NUEVA VISITA ════════════════════════ -->
+<div class="screen active" id="screen-nueva">
+
+  <!-- Datos del centro -->
+  <div class="card">
+    <div class="card-title">📍 Datos del centro</div>
+
+    <div class="field">
+      <div class="field-label">Nombre del centro</div>
+      <input class="field-input" type="text" id="f-centro" placeholder="Ej: Centro Las Flores">
+    </div>
+
+    <div class="field">
+      <div class="field-label">Asesora</div>
+      <select class="field-input" id="f-asesora">
+        <option value="">— Selecciona asesora —</option>
+        <option value="Neri Avendaño">Neri Avendaño</option>
+        <option value="Karina Cruz">Karina Cruz</option>
+        <option value="Christhoper López">Christhoper López</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <div class="field-label">Supervisor que realiza la visita</div>
+      <div class="field-input" style="background:var(--rio-l);color:var(--rio);font-weight:700;border-color:#C5D4F5">👤 Moises Antonio Diaz Silva</div>
+      <input type="hidden" id="f-supervisor" value="Moises Antonio Diaz Silva">
+    </div>
+
+    <div class="field">
+      <div class="field-label">Número de clientas presentes</div>
+      <div class="counter-row">
+        <button class="counter-btn counter-minus" onclick="cambiarClientas(-1)">−</button>
+        <div>
+          <div class="counter-val" id="num-clientas">0</div>
+          <div class="counter-label">clientas</div>
+        </div>
+        <button class="counter-btn counter-plus" onclick="cambiarClientas(1)">+</button>
+        <div style="margin-left:8px">
+          <div class="field-label" style="margin-bottom:4px">Total del centro</div>
+          <input class="field-input" type="number" id="f-total-clientas" placeholder="Total" style="width:90px;font-size:14px;padding:8px 10px" inputmode="numeric">
+        </div>
+      </div>
+    </div>
+
+    <!-- GPS -->
+    <div class="field">
+      <div class="field-label">Ubicación GPS</div>
+      <div class="gps-card" onclick="obtenerGPS()">
+        <span class="gps-icon">📍</span>
+        <div class="gps-info">
+          <div class="gps-title" id="gps-title">Toca para obtener ubicación</div>
+          <div class="gps-coords" id="gps-coords">Lat: — · Lon: —</div>
+        </div>
+        <button class="gps-btn" id="gps-btn">Obtener</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Checklist de supervisión -->
+  <div class="card">
+    <div class="card-title">✅ Checklist de supervisión</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:10px">Califica cada punto: 🟢 Bien · 🟡 Regular · 🔴 Mal</div>
+    <div id="checklist-container"></div>
+  </div>
+
+  <!-- Evaluación general -->
+  <div class="card">
+    <div class="card-title">🚦 Evaluación general del centro</div>
+    <div class="semaforo">
+      <div class="sem-opt" onclick="selSemaforo(this,'verde')">
+        <div class="sem-icon">🟢</div>
+        <div class="sem-label">VERDE</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">Todo bien</div>
+      </div>
+      <div class="sem-opt" onclick="selSemaforo(this,'amarillo')">
+        <div class="sem-icon">🟡</div>
+        <div class="sem-label">AMARILLO</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">Atención</div>
+      </div>
+      <div class="sem-opt" onclick="selSemaforo(this,'rojo')">
+        <div class="sem-icon">🔴</div>
+        <div class="sem-label">ROJO</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">Urgente</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Foto evidencia -->
+  <div class="card">
+    <div class="card-title">📸 Foto evidencia</div>
+    <div class="foto-area" onclick="document.getElementById('foto-input').click()" id="foto-area">
+      <img id="foto-preview" class="foto-preview">
+      <div class="foto-placeholder" id="foto-placeholder">
+        <div class="foto-icon">📷</div>
+        <div class="foto-text">Toca para tomar foto</div>
+        <div class="foto-sub">Evidencia de la visita</div>
+      </div>
+    </div>
+    <input type="file" id="foto-input" accept="image/*" capture="environment" style="display:none" onchange="cargarFoto(this)">
+  </div>
+
+  <!-- Mensaje de la asesora -->
+  <div class="card">
+    <div class="card-title">✉️ Mensaje / observación de la asesora</div>
+    <textarea class="field-input" id="f-mensaje-asesora" rows="3" placeholder="Lo que la asesora quiere comunicar a dirección..."></textarea>
+  </div>
+
+  <!-- Observaciones del supervisor -->
+  <div class="card">
+    <div class="card-title">💬 Observaciones del supervisor</div>
+    <textarea class="field-input" id="f-observaciones" rows="3" placeholder="Comentarios, acuerdos, compromisos del centro..."></textarea>
+
+    <div class="field" style="margin-top:14px;margin-bottom:0">
+      <div class="field-label">Acciones a seguir</div>
+      <textarea class="field-input" id="f-acciones" rows="2" placeholder="¿Qué se acordó hacer antes de la próxima visita?"></textarea>
+    </div>
+  </div>
+
+  <button class="btn-main" onclick="guardarVisita()">💾 Guardar supervisión</button>
+</div>
+
+<!-- ════════════════════════ HISTORIAL ════════════════════════ -->
+<div class="screen" id="screen-historial">
+  <div class="card" style="padding:12px 14px;margin-bottom:12px">
+    <input class="field-input" type="text" id="buscador" placeholder="🔍 Buscar por centro o asesora..." oninput="renderHistorial()" style="margin-bottom:8px">
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="field-label" style="margin:0;flex-shrink:0">Filtrar por fecha:</div>
+      <input type="date" id="filtro-fecha" class="field-input" style="flex:1;padding:8px 10px;font-size:13px;margin:0" oninput="renderHistorial()">
+      <button onclick="document.getElementById('filtro-fecha').value='';renderHistorial()" style="padding:8px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:#fff;font-size:12px;font-weight:700;cursor:pointer;color:var(--text2);white-space:nowrap">Limpiar</button>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <button onclick="exportarExcelDia()" style="flex:1;padding:12px;border-radius:var(--radius-sm);border:none;background:var(--green);color:#fff;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer">📊 Exportar día seleccionado</button>
+    <button onclick="exportarExcelTodo()" style="flex:1;padding:12px;border-radius:var(--radius-sm);border:none;background:var(--rio);color:#fff;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer">📁 Exportar todo</button>
+  </div>
+  <div id="historial-list"></div>
+</div>
+
+<!-- ════════════════════════ RESUMEN ════════════════════════ -->
+<div class="screen" id="screen-resumen">
+  <div class="stat-grid">
+    <div class="stat-box"><div class="stat-val" id="r-total">0</div><div class="stat-label">Visitas totales</div></div>
+    <div class="stat-box"><div class="stat-val" id="r-centros">0</div><div class="stat-label">Centros visitados</div></div>
+    <div class="stat-box"><div class="stat-val" id="r-este-mes">0</div><div class="stat-label">Este mes</div></div>
+    <div class="stat-box"><div class="stat-val" id="r-clientas">0</div><div class="stat-label">Clientas supervisadas</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🚦 Distribución por semáforo</div>
+    <div class="sem-bar" id="sem-bar">
+      <div class="sem-bar-seg" style="background:var(--green);width:0%"></div>
+      <div class="sem-bar-seg" style="background:var(--amber);width:0%"></div>
+      <div class="sem-bar-seg" style="background:var(--red);width:0%"></div>
+    </div>
+    <div style="display:flex;gap:12px;font-size:12px;color:var(--text2)">
+      <span>🟢 <span id="r-verde">0</span> verdes</span>
+      <span>🟡 <span id="r-amarillo">0</span> amarillos</span>
+      <span>🔴 <span id="r-rojo">0</span> rojos</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 Puntos más frecuentes con alerta</div>
+    <div id="r-alertas">
+      <div class="empty"><div class="empty-icon">📊</div><div class="empty-text">Sin datos aún</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏆 Centros por desempeño</div>
+    <div id="r-ranking"></div>
+  </div>
+</div>
+
+<!-- ════════════════════════ REPORTES ════════════════════════ -->
+<div class="screen" id="screen-reportes">
+
+  <div class="reporte-filtros">
+    <div class="filtro-row">
+      <div class="filtro-label">Periodo</div>
+      <select class="filtro-sel" id="rep-periodo" onchange="renderReportes()">
+        <option value="mes">Este mes</option>
+        <option value="quincena">Esta quincena</option>
+        <option value="todo">Todo el historial</option>
+        <option value="personalizado">Personalizado</option>
+      </select>
+    </div>
+    <div class="filtro-row" id="rep-fechas-row" style="display:none">
+      <div class="filtro-label">Desde</div>
+      <input type="date" class="filtro-sel" id="rep-desde" onchange="renderReportes()">
+      <div class="filtro-label" style="min-width:36px;text-align:center">hasta</div>
+      <input type="date" class="filtro-sel" id="rep-hasta" onchange="renderReportes()">
+    </div>
+    <div class="filtro-row">
+      <div class="filtro-label">Asesora</div>
+      <select class="filtro-sel" id="rep-asesor" onchange="renderReportes()">
+        <option value="todas">Todas</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Métricas generales -->
+  <div class="metricas-grid" id="rep-metricas"></div>
+
+  <!-- Gráfica semáforo por asesora -->
+  <div class="grafica-wrap">
+    <div class="grafica-title">🚦 Semáforo por asesora</div>
+    <div id="rep-semaforo-graf"></div>
+    <div style="display:flex;gap:12px;margin-top:8px;font-size:11px;color:var(--text2)">
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:var(--green);display:inline-block"></span>Verde</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:var(--amber);display:inline-block"></span>Amarillo</span>
+      <span style="display:flex;align-items:center;gap:4px"><span style="width:10px;height:10px;border-radius:50%;background:var(--red);display:inline-block"></span>Rojo</span>
+    </div>
+  </div>
+
+  <!-- Gráfica visitas por asesora -->
+  <div class="grafica-wrap">
+    <div class="grafica-title">📋 Visitas realizadas por asesora</div>
+    <div id="rep-visitas-graf"></div>
+  </div>
+
+  <!-- Gráfica asistencia -->
+  <div class="grafica-wrap">
+    <div class="grafica-title">👥 % Asistencia promedio por asesora</div>
+    <div id="rep-asistencia-graf"></div>
+  </div>
+
+  <!-- Centros que necesitan atención -->
+  <div class="grafica-wrap">
+    <div class="grafica-title">🔴 Centros con alerta (rojo/amarillo reciente)</div>
+    <div id="rep-alertas-centros"></div>
+  </div>
+
+  <!-- Centros destacados -->
+  <div class="grafica-wrap">
+    <div class="grafica-title">🏆 Centros con mejor desempeño</div>
+    <div id="rep-top-centros"></div>
+  </div>
+
+  <button class="btn-export-rep" onclick="exportarExcelReporte()">📊 Descargar reporte Excel completo</button>
+  <button class="btn-export-rep2" onclick="exportarExcelPorAsesor()">📁 Exportar separado por asesora</button>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="detail-ov" id="detail-modal">
+  <div class="detail-box">
+    <div class="detail-handle"></div>
+    <button class="detail-close" onclick="cerrarDetalle()">✕</button>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATOS ──
+const CHECKLIST_ITEMS = [
+  {id:'asistencia',   label:'Asistencia de clientas'},
+  {id:'puntualidad',  label:'Puntualidad del inicio'},
+  {id:'libreta_ind',  label:'Libreta individual al corriente'},
+  {id:'bitacora',     label:'Bitácora grupal actualizada'},
+  {id:'cobro',        label:'Cobro ordenado y correcto'},
+  {id:'uniforme',     label:'Identificación/uniforme asesora'},
+  {id:'comunicacion', label:'Comunicación asesora-clientas'},
+  {id:'ambiente',     label:'Ambiente del centro'},
+  {id:'solicitudes_credito', label:'¿La jefa de centro tiene 5 solicitudes de crédito nuevo?'},
+];
+
+let visitas = [];
+let gpsData = null;
+let semaforoSel = null;
+let fotoData = null;
+let clientasPresentes = 0;
+
+// ── SUPABASE ──
+const SUPABASE_URL = 'https://wbkznjbccjivlsveqqwp.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_7wcjMn9soRCJWogxJmXKxQ_ZvCFxixy';
+let supabase = null;
+try { if (window.supabase) supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e) { console.warn('Supabase init error:', e); }
+
+async function guardarEnSupabase(visita) {
+  if (!supabase) { console.warn('Supabase no disponible'); return; }
+  try {
+    const payload = {
+      id_local:         String(visita.id),
+      fecha:            visita.fecha,
+      centro:           visita.centro,
+      asesora:          visita.asesora,
+      supervisor:       visita.supervisor || null,
+      clientas_presentes: visita.clientasPresentes || 0,
+      total_clientas:   visita.totalClientas || 0,
+      semaforo:         visita.semaforo,
+      gps_lat:          visita.gps ? parseFloat(visita.gps.lat) : null,
+      gps_lon:          visita.gps ? parseFloat(visita.gps.lon) : null,
+      gps_precision:    visita.gps ? visita.gps.acc : null,
+      checklist:        JSON.stringify(visita.checklist),
+      mensaje_asesora:  visita.mensajeAsesora || null,
+      observaciones:    visita.observaciones || null,
+      acciones:         visita.acciones || null,
+      tiene_foto:       !!visita.foto,
+    };
+    const { error } = await supabase.from('supervisiones').insert([payload]);
+    if (error) {
+      console.error('Error Supabase:', error.message);
+      showToast('⚠️ Guardado local OK, fallo nube: ' + error.message.slice(0, 40));
+    } else {
+      console.log('✅ Guardado en Supabase');
+    }
+  } catch(e) {
+    console.error('Supabase exception:', e);
+  }
+}
+
+try { visitas = JSON.parse(localStorage.getItem('fooax_sup') || '[]'); } catch(e) {}
+function guardar(){ try { localStorage.setItem('fooax_sup', JSON.stringify(visitas)); } catch(e){} }
+
+// ── INIT ──
+const meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const hoy = new Date();
+document.getElementById('badge-fecha').textContent =
+  hoy.getDate() + ' ' + meses[hoy.getMonth()] + ' ' + hoy.getFullYear();
+
+renderChecklist();
+renderHistorial();
+renderResumen();
+
+// ── NAV ──
+function setNav(tab){
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('nav-'+tab).classList.add('active');
+  document.getElementById('screen-'+tab).classList.add('active');
+  if(tab==='historial') renderHistorial();
+  if(tab==='resumen') renderResumen();
+  if(tab==='reportes') renderReportes();
+}
+
+// ── CHECKLIST ──
+function renderChecklist(){
+  const c = document.getElementById('checklist-container');
+  c.innerHTML = CHECKLIST_ITEMS.map(item=>`
+    <div class="check-item" id="ci-${item.id}">
+      <div class="check-box" onclick="toggleCheck('${item.id}')"></div>
+      <span class="check-text">${item.label}</span>
+      <div class="check-sem">
+        <div class="cs-dot" title="Bien" onclick="setCheckSem('${item.id}','g')">✓</div>
+        <div class="cs-dot" title="Regular" onclick="setCheckSem('${item.id}','a')">!</div>
+        <div class="cs-dot" title="Mal" onclick="setCheckSem('${item.id}','r')">✗</div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleCheck(id){
+  const box = document.querySelector(`#ci-${id} .check-box`);
+  box.classList.toggle('checked');
+}
+
+function setCheckSem(id, color){
+  const dots = document.querySelectorAll(`#ci-${id} .cs-dot`);
+  dots.forEach(d=>{ d.className='cs-dot'; });
+  const map = {g:'active-g', a:'active-a', r:'active-r'};
+  dots[{g:0,a:1,r:2}[color]].classList.add(map[color]);
+  // Auto-check
+  document.querySelector(`#ci-${id} .check-box`).classList.add('checked');
+}
+
+function getChecklistData(){
+  return CHECKLIST_ITEMS.map(item=>{
+    const checked = document.querySelector(`#ci-${item.id} .check-box`).classList.contains('checked');
+    const dots = document.querySelectorAll(`#ci-${item.id} .cs-dot`);
+    let sem = null;
+    if(dots[0].classList.contains('active-g')) sem='verde';
+    else if(dots[1].classList.contains('active-a')) sem='amarillo';
+    else if(dots[2].classList.contains('active-r')) sem='rojo';
+    return { id:item.id, label:item.label, checked, sem };
+  });
+}
+
+// ── SEMÁFORO GENERAL ──
+function selSemaforo(el, color){
+  document.querySelectorAll('.sem-opt').forEach(o=>{
+    o.className='sem-opt';
+  });
+  el.classList.add('sel-'+color);
+  semaforoSel = color;
+}
+
+// ── CLIENTAS ──
+function cambiarClientas(delta){
+  clientasPresentes = Math.max(0, clientasPresentes + delta);
+  document.getElementById('num-clientas').textContent = clientasPresentes;
+}
+
+// ── GPS ──
+function obtenerGPS(){
+  const btn = document.getElementById('gps-btn');
+  const title = document.getElementById('gps-title');
+  const coords = document.getElementById('gps-coords');
+  btn.textContent = '...';
+  title.textContent = 'Obteniendo ubicación...';
+  if(!navigator.geolocation){ showToast('GPS no disponible'); return; }
+  navigator.geolocation.getCurrentPosition(pos=>{
+    gpsData = { lat: pos.coords.latitude.toFixed(6), lon: pos.coords.longitude.toFixed(6), acc: Math.round(pos.coords.accuracy) };
+    title.textContent = '📍 Ubicación obtenida';
+    coords.textContent = `Lat: ${gpsData.lat} · Lon: ${gpsData.lon} · ±${gpsData.acc}m`;
+    btn.textContent = '✓';
+    showToast('📍 Ubicación registrada');
+  }, err=>{
+    title.textContent = 'No se pudo obtener GPS';
+    btn.textContent = 'Reintentar';
+    showToast('GPS no disponible — activa el permiso de ubicación');
+  }, {timeout:10000, enableHighAccuracy:true});
+}
+
+// ── FOTO ──
+function cargarFoto(input){
+  if(!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e=>{
+    fotoData = e.target.result;
+    const preview = document.getElementById('foto-preview');
+    preview.src = fotoData;
+    preview.style.display = 'block';
+    document.getElementById('foto-placeholder').style.display = 'none';
+    document.getElementById('foto-area').classList.add('has-foto');
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+// ── GUARDAR VISITA ──
+function guardarVisita(){
+  const centro = document.getElementById('f-centro').value.trim();
+  const asesora = document.getElementById('f-asesora').value.trim();
+  const supervisor = document.getElementById('f-supervisor').value.trim();
+  if(!centro){ showToast('⚠️ Escribe el nombre del centro'); return; }
+  if(!asesora){ showToast('⚠️ Escribe el nombre de la asesora'); return; }
+  if(!semaforoSel){ showToast('⚠️ Selecciona la evaluación general'); return; }
+
+  const visita = {
+    id: Date.now(),
+    fecha: new Date().toISOString(),
+    centro, asesora, supervisor,
+    clientasPresentes,
+    totalClientas: parseInt(document.getElementById('f-total-clientas').value)||0,
+    gps: gpsData,
+    semaforo: semaforoSel,
+    checklist: getChecklistData(),
+    foto: fotoData,
+    mensajeAsesora: document.getElementById('f-mensaje-asesora').value.trim(),
+    observaciones: document.getElementById('f-observaciones').value.trim(),
+    acciones: document.getElementById('f-acciones').value.trim(),
+  };
+
+  visitas.unshift(visita);
+  guardar();
+  guardarEnSupabase(visita);  // ← también guarda en Supabase
+  resetForm();
+  showToast('✅ Supervisión guardada correctamente');
+  setTimeout(()=>setNav('historial'), 1200);
+}
+
+function resetForm(){
+  ['f-centro','f-asesora','f-supervisor','f-total-clientas','f-mensaje-asesora','f-observaciones','f-acciones']
+    .forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  clientasPresentes=0;
+  document.getElementById('num-clientas').textContent='0';
+  gpsData=null;
+  semaforoSel=null;
+  fotoData=null;
+  document.getElementById('gps-title').textContent='Toca para obtener ubicación';
+  document.getElementById('gps-coords').textContent='Lat: — · Lon: —';
+  document.getElementById('gps-btn').textContent='Obtener';
+  document.getElementById('foto-preview').style.display='none';
+  document.getElementById('foto-placeholder').style.display='block';
+  document.getElementById('foto-area').classList.remove('has-foto');
+  document.querySelectorAll('.sem-opt').forEach(o=>o.className='sem-opt');
+  renderChecklist();
+}
+
+
+// ── DETALLE ──
+function verDetalle(id){
+  const v = visitas.find(x=>x.id===id);
+  if(!v) return;
+  const fecha = new Date(v.fecha);
+  const fechaStr = fecha.getDate()+' '+meses[fecha.getMonth()]+' '+fecha.getFullYear()+' '+fecha.getHours()+':'+String(fecha.getMinutes()).padStart(2,'0');
+  const semColor={verde:'var(--green)',amarillo:'var(--amber)',rojo:'var(--red)'};
+  const semEmoji={verde:'🟢',amarillo:'🟡',rojo:'🔴'};
+
+  document.getElementById('detail-content').innerHTML=`
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <span style="font-size:28px">${semEmoji[v.semaforo]}</span>
+      <div><div style="font-size:17px;font-weight:800">${v.centro}</div>
+      <div style="font-size:12px;color:var(--text3)">${fechaStr}</div></div>
+    </div>
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">📋 Datos generales</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">
+        <div><b>Asesora:</b><br>${v.asesora}</div>
+        <div><b>Supervisor:</b><br>${v.supervisor||'—'}</div>
+        <div><b>Presentes:</b><br>${v.clientasPresentes} / ${v.totalClientas||'?'}</div>
+        <div><b>GPS:</b><br>${v.gps?v.gps.lat+', '+v.gps.lon:'No registrado'}</div>
+      </div>
+    </div>
+    ${v.foto?`<div class="card" style="margin-bottom:10px"><div class="card-title">📸 Foto evidencia</div><img src="${v.foto}" style="width:100%;border-radius:var(--radius-sm);max-height:220px;object-fit:cover"></div>`:''}
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-title">✅ Checklist</div>
+      ${v.checklist.map(c=>{
+        const semEmojis={verde:'🟢',amarillo:'🟡',rojo:'🔴'};
+        return `<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:.5px solid var(--border);font-size:12px">
+          <span>${c.checked?'☑':'☐'}</span>
+          <span style="flex:1">${c.label}</span>
+          <span>${c.sem?semEmojis[c.sem]:'—'}</span>
+        </div>`;
+      }).join('')}
+    </div>
+    ${v.mensajeAsesora?`<div class="card" style="margin-bottom:10px"><div class="card-title">✉️ Mensaje de la asesora</div><p style="font-size:13px;color:var(--text2);line-height:1.6;font-style:italic">"${v.mensajeAsesora}"</p></div>`:''}
+    ${v.observaciones?`<div class="card" style="margin-bottom:10px"><div class="card-title">💬 Observaciones</div><p style="font-size:13px;color:var(--text2);line-height:1.6">${v.observaciones}</p></div>`:''}
+    ${v.acciones?`<div class="card" style="margin-bottom:10px"><div class="card-title">⚡ Acciones a seguir</div><p style="font-size:13px;color:var(--text2);line-height:1.6">${v.acciones}</p></div>`:''}
+    <button style="width:100%;padding:14px;border-radius:var(--radius-sm);border:none;background:linear-gradient(135deg,#F1228E,#FD6E29);color:#fff;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:8px" onclick="imprimirInforme(${v.id})">🖨️ Imprimir informe</button>
+    <button style="width:100%;padding:12px;border-radius:var(--radius-sm);border:1.5px solid var(--red);background:var(--red-l);color:var(--red);font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-top:0px" onclick="eliminarVisita(${v.id})">🗑 Eliminar esta supervisión</button>`;
+
+  document.getElementById('detail-modal').classList.add('open');
+}
+
+function imprimirInforme(id){
+  const v = visitas.find(x=>x.id===id);
+  if(!v) return;
+  const fecha = new Date(v.fecha);
+  const fechaStr = fecha.getDate()+' de '+['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][fecha.getMonth()]+' de '+fecha.getFullYear();
+  const horaStr = fecha.getHours()+':'+String(fecha.getMinutes()).padStart(2,'0');
+  const semTexto={verde:'🟢 VERDE — Buen estado',amarillo:'🟡 AMARILLO — Requiere atención',rojo:'🔴 ROJO — Atención urgente'};
+  const semColor={verde:'#059669',amarillo:'#D97706',rojo:'#DC2626'};
+  const folio='SUP-'+fecha.getFullYear()+String(fecha.getMonth()+1).padStart(2,'0')+String(fecha.getDate()).padStart(2,'0')+'-'+String(v.id).slice(-3);
+
+  const html=`<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Informe de Supervisión — ${v.centro}</title>
+<style>
+  @page{size:letter;margin:2cm}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,sans-serif;font-size:12px;color:#1A1A1A;line-height:1.5}
+  .header{background:linear-gradient(135deg,#F1228E,#FD6E29,#F2BB06);color:#fff;padding:20px 24px;border-radius:8px 8px 0 0;margin-bottom:0}
+  .header-title{font-size:20px;font-weight:700;margin-bottom:4px}
+  .header-sub{font-size:11px;opacity:.85}
+  .header-meta{font-size:11px;opacity:.8;margin-top:6px}
+  .body{border:1px solid #E0D0E8;border-top:none;border-radius:0 0 8px 8px;padding:16px 20px}
+  .section{margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #F0E8F5}
+  .section:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+  .section-title{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .dato{background:#F7F3F9;border-radius:6px;padding:8px 10px}
+  .dato-label{font-size:10px;color:#888;margin-bottom:2px}
+  .dato-val{font-size:13px;font-weight:700;color:#1A1A1A}
+  .check-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:.5px solid #F0E8F5;font-size:12px}
+  .check-row:last-child{border-bottom:none}
+  .badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+  .badge-verde{background:#D1FAE5;color:#065F46}
+  .badge-amarillo{background:#FEF3C7;color:#92400E}
+  .badge-rojo{background:#FEE2E2;color:#991B1B}
+  .text-block{background:#F7F3F9;border-left:3px solid #F1228E;padding:8px 12px;border-radius:0 6px 6px 0;font-size:12px;color:#444;font-style:italic;line-height:1.6}
+  .obs-block{font-size:12px;color:#333;line-height:1.6}
+  .firma-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:4px}
+  .firma-box{text-align:center}
+  .firma-espacio{border:1px solid #DDD;border-radius:6px;height:80px;margin-bottom:8px;background:#FAFAFA}
+  .firma-nombre{font-size:12px;font-weight:700;color:#1A1A1A}
+  .firma-cargo{font-size:10px;color:#888}
+  .footer{margin-top:16px;padding-top:12px;border-top:1px solid #F0E8F5;display:flex;justify-content:space-between;font-size:10px;color:#999}
+  .sem-badge{display:inline-block;font-size:13px;font-weight:700;padding:4px 14px;border-radius:20px}
+  .foto-img{width:100%;max-height:200px;object-fit:cover;border-radius:6px;margin-top:4px}
+  .gps-box{background:#EBF0FC;border-radius:6px;padding:8px 12px;font-size:11px;font-family:monospace;color:#324AB6}
+  @media print{
+    body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .no-print{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <div style="font-size:11px;opacity:.8;margin-bottom:6px">INFORME DE SUPERVISIÓN · FOOax S.A. de C.V.</div>
+  <div class="header-title">${v.centro}</div>
+  <div class="header-sub">Folio: ${folio}</div>
+  <div class="header-meta">${fechaStr} · ${horaStr} hrs</div>
+</div>
+
+<div class="body">
+
+  <div class="section">
+    <div class="section-title">Datos generales</div>
+    <div class="grid2">
+      <div class="dato"><div class="dato-label">Centro</div><div class="dato-val">${v.centro}</div></div>
+      <div class="dato"><div class="dato-label">Asesora</div><div class="dato-val">${v.asesora}</div></div>
+      <div class="dato"><div class="dato-label">Supervisor</div><div class="dato-val">${v.supervisor||'—'}</div></div>
+      <div class="dato"><div class="dato-label">Evaluación general</div><div class="dato-val" style="color:${semColor[v.semaforo]}">${semTexto[v.semaforo]||v.semaforo}</div></div>
+      <div class="dato"><div class="dato-label">Clientas presentes</div><div class="dato-val">${v.clientasPresentes} de ${v.totalClientas||'?'} ${v.totalClientas>0?'('+Math.round(v.clientasPresentes/v.totalClientas*100)+'%)':''}</div></div>
+      ${v.gps?`<div class="dato"><div class="dato-label">Ubicación GPS</div><div class="dato-val" style="font-size:10px;font-family:monospace">${v.gps.lat}, ${v.gps.lon}</div></div>`:''}
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Checklist de supervisión</div>
+    ${v.checklist.map(c=>{
+      const cls=c.sem==='verde'?'badge-verde':c.sem==='amarillo'?'badge-amarillo':c.sem==='rojo'?'badge-rojo':'';
+      const txt=c.sem==='verde'?'Bien':c.sem==='amarillo'?'Regular':c.sem==='rojo'?'Mal':'—';
+      return `<div class="check-row"><span>${c.checked?'☑':'☐'} ${c.label}</span><span class="badge ${cls}">${txt}</span></div>`;
+    }).join('')}
+  </div>
+
+  ${v.mensajeAsesora?`<div class="section"><div class="section-title">Mensaje de la asesora</div><div class="text-block">"${v.mensajeAsesora}"</div></div>`:''}
+
+  ${v.observaciones?`<div class="section"><div class="section-title">Observaciones del supervisor</div><div class="obs-block">${v.observaciones}</div></div>`:''}
+
+  ${v.acciones?`<div class="section"><div class="section-title">Acciones acordadas</div><div class="obs-block">${v.acciones}</div></div>`:''}
+
+  ${v.foto?`<div class="section"><div class="section-title">Foto evidencia</div><img src="${v.foto}" class="foto-img"></div>`:''}
+
+  <div class="section">
+    <div class="section-title">Firmas de conformidad</div>
+    <div class="firma-grid">
+      <div class="firma-box">
+        <div class="firma-espacio"></div>
+        <div class="firma-nombre">${v.asesora}</div>
+        <div class="firma-cargo">Asesora FOOax</div>
+      </div>
+      <div class="firma-box">
+        <div class="firma-espacio"></div>
+        <div class="firma-nombre">${v.supervisor||'Supervisor'}</div>
+        <div class="firma-cargo">Supervisor · ASEX Capacitaciones</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>FOOax S.A. de C.V. · Supervisión quincenal de centros</span>
+    <span>Folio: ${folio} · ${fechaStr}</span>
+  </div>
+
+</div>
+
+<script>window.onload=()=>{window.print();}<\/script>
+</body>
+</html>`;
+
+  const win = window.open('','_blank','width=800,height=900');
+  win.document.write(html);
+  win.document.close();
+}
+
+function cerrarDetalle(){
+  document.getElementById('detail-modal').classList.remove('open');
+}
+
+function eliminarVisita(id){
+  if(!confirm('¿Eliminar esta supervisión?')) return;
+  visitas = visitas.filter(v=>v.id!==id);
+  guardar();
+  cerrarDetalle();
+  renderHistorial();
+  renderResumen();
+  showToast('🗑 Supervisión eliminada');
+}
+
+// ── RESUMEN ──
+function renderResumen(){
+  const total = visitas.length;
+  const centros = new Set(visitas.map(v=>v.centro)).size;
+  const mesActual = new Date().getMonth();
+  const esteMes = visitas.filter(v=>new Date(v.fecha).getMonth()===mesActual).length;
+  const totalClientas = visitas.reduce((s,v)=>s+(v.clientasPresentes||0),0);
+
+  document.getElementById('r-total').textContent=total;
+  document.getElementById('r-centros').textContent=centros;
+  document.getElementById('r-este-mes').textContent=esteMes;
+  document.getElementById('r-clientas').textContent=totalClientas;
+
+  const verde = visitas.filter(v=>v.semaforo==='verde').length;
+  const amarillo = visitas.filter(v=>v.semaforo==='amarillo').length;
+  const rojo = visitas.filter(v=>v.semaforo==='rojo').length;
+  document.getElementById('r-verde').textContent=verde;
+  document.getElementById('r-amarillo').textContent=amarillo;
+  document.getElementById('r-rojo').textContent=rojo;
+
+  if(total>0){
+    const segs = document.querySelectorAll('.sem-bar-seg');
+    segs[0].style.width=(verde/total*100)+'%';
+    segs[1].style.width=(amarillo/total*100)+'%';
+    segs[2].style.width=(rojo/total*100)+'%';
+  }
+
+  // Alertas frecuentes
+  const alertaCount = {};
+  visitas.forEach(v=>{
+    v.checklist.forEach(c=>{
+      if(c.sem==='rojo'||c.sem==='amarillo'){
+        alertaCount[c.label]=(alertaCount[c.label]||0)+1;
+      }
+    });
+  });
+  const alertasSorted = Object.entries(alertaCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const alertasEl = document.getElementById('r-alertas');
+  if(alertasSorted.length){
+    alertasEl.innerHTML=alertasSorted.map(([label,count])=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border);font-size:13px">
+        <span style="flex:1">${label}</span>
+        <span style="font-weight:800;color:var(--red)">${count}x</span>
+      </div>`).join('');
+  } else {
+    alertasEl.innerHTML=`<div class="empty" style="padding:20px"><div class="empty-text">Sin alertas registradas 🎉</div></div>`;
+  }
+
+  // Ranking centros
+  const centroData = {};
+  visitas.forEach(v=>{
+    if(!centroData[v.centro]) centroData[v.centro]={verde:0,amarillo:0,rojo:0,total:0};
+    centroData[v.centro][v.semaforo]++;
+    centroData[v.centro].total++;
+  });
+  const rankingEl = document.getElementById('r-ranking');
+  const ranking = Object.entries(centroData).sort((a,b)=>b[1].verde-a[1].verde);
+  if(ranking.length){
+    rankingEl.innerHTML=ranking.map(([nombre,data],i)=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:.5px solid var(--border)">
+        <span style="font-size:16px;font-weight:900;color:var(--text3);min-width:20px">${i+1}</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700">${nombre}</div>
+          <div style="font-size:11px;color:var(--text3)">${data.total} visita${data.total!==1?'s':''}</div>
+        </div>
+        <span>🟢${data.verde} 🟡${data.amarillo} 🔴${data.rojo}</span>
+      </div>`).join('');
+  } else {
+    rankingEl.innerHTML=`<div class="empty" style="padding:20px"><div class="empty-text">Sin datos aún</div></div>`;
+  }
+}
+
+// ── FILTRO EN HISTORIAL ──
+function renderHistorial(){
+  const q = (document.getElementById('buscador')?.value||'').toLowerCase();
+  const fechaFiltro = document.getElementById('filtro-fecha')?.value||'';
+  const filtered = visitas.filter(v=>{
+    const matchQ = v.centro.toLowerCase().includes(q) || v.asesora.toLowerCase().includes(q);
+    const matchFecha = !fechaFiltro || new Date(v.fecha).toISOString().startsWith(fechaFiltro);
+    return matchQ && matchFecha;
+  });
+  const el = document.getElementById('historial-list');
+  if(!filtered.length){
+    el.innerHTML=`<div class="empty"><div class="empty-icon">📁</div><div class="empty-text">Sin supervisiones</div><div class="empty-sub">Prueba otro filtro o fecha</div></div>`;
+    return;
+  }
+  const semColor = {verde:'var(--green)',amarillo:'var(--amber)',rojo:'var(--red)'};
+  const semBg = {verde:'var(--green-l)',amarillo:'var(--amber-l)',rojo:'var(--red-l)'};
+  el.innerHTML = filtered.map(v=>{
+    const fecha = new Date(v.fecha);
+    const fechaStr = fecha.getDate()+' '+meses[fecha.getMonth()]+' '+fecha.getFullYear();
+    const alertas = v.checklist.filter(c=>c.sem==='rojo'||c.sem==='amarillo').length;
+    const okItems = v.checklist.filter(c=>c.sem==='verde').length;
+    return `<div class="visita-card" onclick="verDetalle(${v.id})">
+      <div class="visita-header">
+        <div class="visita-semaforo" style="background:${semColor[v.semaforo]||'#ccc'}"></div>
+        <div class="visita-centro">${v.centro}</div>
+        <div class="visita-fecha">${fechaStr}</div>
+      </div>
+      <div class="visita-tags">
+        <span class="vtag" style="background:${semBg[v.semaforo]};color:${semColor[v.semaforo]}">${v.semaforo.toUpperCase()}</span>
+        <span class="vtag" style="background:var(--rio-l);color:var(--rio)">👤 ${v.asesora}</span>
+        <span class="vtag" style="background:var(--mag-l);color:var(--mag)">👥 ${v.clientasPresentes} presentes</span>
+        ${alertas>0?`<span class="vtag" style="background:var(--red-l);color:var(--red)">⚠️ ${alertas} alertas</span>`:''}
+        ${okItems>0?`<span class="vtag" style="background:var(--green-l);color:var(--green)">✓ ${okItems} ok</span>`:''}
+      </div>
+      ${v.observaciones?`<div class="visita-obs">"${v.observaciones.substring(0,100)}${v.observaciones.length>100?'...':''}"</div>`:''}
+      <div class="visita-meta">
+        ${v.gps?`<span class="vmeta-item">📍 GPS</span>`:''}
+        ${v.foto?`<span class="vmeta-item">📸 Foto</span>`:''}
+        ${v.mensajeAsesora?`<span class="vmeta-item">✉️ Msg asesora</span>`:''}
+        ${v.supervisor?`<span class="vmeta-item">👁️ ${v.supervisor}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── EXPORTAR EXCEL ──
+function visitasARows(lista){
+  const semEmoji={verde:'🟢 VERDE',amarillo:'🟡 AMARILLO',rojo:'🔴 ROJO'};
+  const semCheck={verde:'BIEN',amarillo:'REGULAR',rojo:'MAL'};
+  return lista.map(v=>{
+    const fecha=new Date(v.fecha);
+    const fechaStr=fecha.getDate()+'/'+(fecha.getMonth()+1)+'/'+fecha.getFullYear();
+    const horaStr=fecha.getHours()+':'+String(fecha.getMinutes()).padStart(2,'0');
+    const cl = {};
+    v.checklist.forEach(c=>{ cl[c.id]=c.sem?semCheck[c.sem]:'—'; });
+    return {
+      'Fecha': fechaStr,
+      'Hora': horaStr,
+      'Centro': v.centro,
+      'Asesora': v.asesora,
+      'Supervisor': v.supervisor||'',
+      'Clientas presentes': v.clientasPresentes,
+      'Total clientas centro': v.totalClientas||0,
+      '% Asistencia': v.totalClientas>0?Math.round((v.clientasPresentes/v.totalClientas)*100)+'%':'—',
+      'Evaluación general': semEmoji[v.semaforo]||v.semaforo,
+      'GPS Latitud': v.gps?v.gps.lat:'',
+      'GPS Longitud': v.gps?v.gps.lon:'',
+      'Asistencia clientas': cl.asistencia||'—',
+      'Puntualidad': cl.puntualidad||'—',
+      'Libreta individual': cl.libreta_ind||'—',
+      'Bitácora grupal': cl.bitacora||'—',
+      'Cobro correcto': cl.cobro||'—',
+      'Identificación asesora': cl.uniforme||'—',
+      'Comunicación': cl.comunicacion||'—',
+      'Ambiente del centro': cl.ambiente||'—',
+      'Mensaje de la asesora': v.mensajeAsesora||'',
+      'Observaciones supervisor': v.observaciones||'',
+      'Acciones a seguir': v.acciones||'',
+    };
+  });
+}
+
+function crearExcel(lista, nombreArchivo){
+  if(!lista.length){ showToast('⚠️ No hay visitas para exportar'); return; }
+  const rows = visitasARows(lista);
+  const ws = XLSX.utils.json_to_sheet(rows);
+
+  // Anchos de columna
+  const colWidths = [
+    {wch:10},{wch:7},{wch:22},{wch:22},{wch:20},
+    {wch:10},{wch:12},{wch:10},{wch:14},
+    {wch:12},{wch:12},
+    {wch:14},{wch:12},{wch:16},{wch:14},
+    {wch:14},{wch:18},{wch:14},{wch:16},
+    {wch:30},{wch:35},{wch:30}
+  ];
+  ws['!cols'] = colWidths;
+
+  // Estilo encabezados (color magenta FOOax)
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  for(let C=range.s.c; C<=range.e.c; C++){
+    const addr = XLSX.utils.encode_cell({r:0, c:C});
+    if(!ws[addr]) continue;
+    ws[addr].s = {
+      fill:{fgColor:{rgb:'F1228E'}},
+      font:{bold:true, color:{rgb:'FFFFFF'}, name:'Arial', sz:10},
+      alignment:{horizontal:'center', vertical:'center', wrapText:true},
+      border:{bottom:{style:'medium',color:{rgb:'C0006E'}}}
+    };
+  }
+
+  // Semáforo — colorear la columna Evaluación general
+  for(let R=1; R<=range.e.r; R++){
+    const evalAddr = XLSX.utils.encode_cell({r:R, c:8}); // columna Evaluación general
+    if(!ws[evalAddr]) continue;
+    const val = ws[evalAddr].v||'';
+    let color = 'FFFFFF';
+    if(val.includes('VERDE')) color = 'E1F5EE';
+    else if(val.includes('AMARILLO')) color = 'FEF3C7';
+    else if(val.includes('ROJO')) color = 'FEE2E2';
+    ws[evalAddr].s = { fill:{fgColor:{rgb:color}}, font:{bold:true, name:'Arial', sz:10} };
+
+    // Estilo filas alternas
+    for(let C=range.s.c; C<=range.e.c; C++){
+      const addr=XLSX.utils.encode_cell({r:R,c:C});
+      if(!ws[addr]) ws[addr]={t:'s',v:''};
+      if(!ws[addr].s) ws[addr].s={};
+      ws[addr].s.font={name:'Arial',sz:10};
+      ws[addr].s.alignment={vertical:'center',wrapText:true};
+      if(R%2===0) ws[addr].s.fill={fgColor:{rgb:'FDF5FC'}};
+    }
+  }
+
+  // Altura de filas
+  ws['!rows']=[{hpt:30}]; // header
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Supervisiones');
+
+  // Hoja resumen
+  const resumenData = generarResumenData(lista);
+  const ws2 = XLSX.utils.json_to_sheet(resumenData);
+  ws2['!cols']=[{wch:25},{wch:15},{wch:10},{wch:10},{wch:10},{wch:15},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Resumen por centro');
+
+  XLSX.writeFile(wb, nombreArchivo);
+  showToast('✅ Excel descargado: '+nombreArchivo);
+}
+
+function generarResumenData(lista){
+  const centros={};
+  lista.forEach(v=>{
+    if(!centros[v.centro]) centros[v.centro]={
+      centro:v.centro, visitas:0, verde:0, amarillo:0, rojo:0, clientas:0
+    };
+    centros[v.centro].visitas++;
+    centros[v.centro][v.semaforo]++;
+    centros[v.centro].clientas+=v.clientasPresentes||0;
+  });
+  return Object.values(centros).map(c=>({
+    'Centro': c.centro,
+    'Total visitas': c.visitas,
+    '🟢 Verde': c.verde,
+    '🟡 Amarillo': c.amarillo,
+    '🔴 Rojo': c.rojo,
+    'Clientas supervisadas': c.clientas,
+    '% Verdes': c.visitas>0?Math.round((c.verde/c.visitas)*100)+'%':'0%'
+  }));
+}
+
+function exportarExcelDia(){
+  const fecha = document.getElementById('filtro-fecha')?.value;
+  if(!fecha){ showToast('⚠️ Selecciona una fecha primero'); return; }
+  const lista = visitas.filter(v=>new Date(v.fecha).toISOString().startsWith(fecha));
+  if(!lista.length){ showToast('⚠️ No hay visitas para esa fecha'); return; }
+  const d=new Date(fecha);
+  const nombre=`FOOax_Supervision_${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}.xlsx`;
+  crearExcel(lista, nombre);
+}
+
+function exportarExcelTodo(){
+  if(!visitas.length){ showToast('⚠️ No hay visitas registradas'); return; }
+  const hoy=new Date();
+  const nombre=`FOOax_Supervisiones_Completo_${hoy.getDate()}-${hoy.getMonth()+1}-${hoy.getFullYear()}.xlsx`;
+  crearExcel(visitas, nombre);
+}
+
+// ── REPORTES ──
+function filtrarPorPeriodo(lista){
+  const periodo = document.getElementById('rep-periodo')?.value||'mes';
+  const hoy = new Date();
+  return lista.filter(v=>{
+    const f = new Date(v.fecha);
+    if(periodo==='mes') return f.getMonth()===hoy.getMonth()&&f.getFullYear()===hoy.getFullYear();
+    if(periodo==='quincena'){
+      const dia=hoy.getDate();
+      if(dia<=15) return f.getMonth()===hoy.getMonth()&&f.getDate()<=15;
+      else return f.getMonth()===hoy.getMonth()&&f.getDate()>15;
+    }
+    if(periodo==='personalizado'){
+      const desde=document.getElementById('rep-desde')?.value;
+      const hasta=document.getElementById('rep-hasta')?.value;
+      const fd=desde?new Date(desde):null;
+      const fh=hasta?new Date(hasta+'T23:59:59'):null;
+      if(fd&&f<fd) return false;
+      if(fh&&f>fh) return false;
+      return true;
+    }
+    return true; // todo
+  });
+}
+
+function renderReportes(){
+  // Mostrar/ocultar fechas personalizadas
+  const periodo=document.getElementById('rep-periodo')?.value;
+  document.getElementById('rep-fechas-row').style.display=periodo==='personalizado'?'flex':'none';
+
+  // Poblar selector de asesoras
+  const asesoras=[...new Set(visitas.map(v=>v.asesora))].filter(Boolean).sort();
+  const selAsesor=document.getElementById('rep-asesor');
+  const valActual=selAsesor.value;
+  selAsesor.innerHTML='<option value="todas">Todas las asesoras</option>'+
+    asesoras.map(a=>`<option value="${a}" ${valActual===a?'selected':''}>${a}</option>`).join('');
+
+  let datos=filtrarPorPeriodo(visitas);
+  const asFiltro=document.getElementById('rep-asesor')?.value;
+  if(asFiltro&&asFiltro!=='todas') datos=datos.filter(v=>v.asesora===asFiltro);
+
+  // Métricas generales
+  const totalV=datos.length;
+  const centrosU=new Set(datos.map(v=>v.centro)).size;
+  const asesorasU=new Set(datos.map(v=>v.asesora)).size;
+  const clientasT=datos.reduce((s,v)=>s+(v.clientasPresentes||0),0);
+  const verde=datos.filter(v=>v.semaforo==='verde').length;
+  const pctVerde=totalV?Math.round(verde/totalV*100):0;
+  const asistProm=datos.filter(v=>v.totalClientas>0);
+  const pctAsist=asistProm.length?Math.round(asistProm.reduce((s,v)=>s+(v.clientasPresentes/v.totalClientas*100),0)/asistProm.length):0;
+
+  document.getElementById('rep-metricas').innerHTML=`
+    <div class="metrica"><div class="metrica-val">${totalV}</div><div class="metrica-label">Visitas en el periodo</div></div>
+    <div class="metrica"><div class="metrica-val">${centrosU}</div><div class="metrica-label">Centros visitados</div></div>
+    <div class="metrica"><div class="metrica-val">${asesorasU}</div><div class="metrica-label">Asesoras supervisadas</div></div>
+    <div class="metrica"><div class="metrica-val">${clientasT}</div><div class="metrica-label">Clientas supervisadas</div></div>
+    <div class="metrica"><div class="metrica-val" style="color:${pctVerde>=70?'var(--green)':pctVerde>=50?'var(--amber)':'var(--red)'}">${pctVerde}%</div><div class="metrica-label">Centros en verde</div></div>
+    <div class="metrica"><div class="metrica-val" style="color:${pctAsist>=80?'var(--green)':pctAsist>=60?'var(--amber)':'var(--red)'}">${pctAsist}%</div><div class="metrica-label">Asistencia promedio</div></div>`;
+
+  // Datos por asesora
+  const byAsesor={};
+  datos.forEach(v=>{
+    if(!v.asesora) return;
+    if(!byAsesor[v.asesora]) byAsesor[v.asesora]={nombre:v.asesora,visitas:0,verde:0,amarillo:0,rojo:0,clientas:0,totalClientas:0,centros:new Set()};
+    const a=byAsesor[v.asesora];
+    a.visitas++;a[v.semaforo]++;
+    a.clientas+=v.clientasPresentes||0;
+    a.totalClientas+=v.totalClientas||0;
+    a.centros.add(v.centro);
+  });
+  const asArr=Object.values(byAsesor).sort((a,b)=>b.visitas-a.visitas);
+  const maxVisitas=Math.max(...asArr.map(a=>a.visitas),1);
+
+  // Gráfica semáforo stacked
+  const semGraf=document.getElementById('rep-semaforo-graf');
+  if(!asArr.length){semGraf.innerHTML='<div style="text-align:center;color:var(--text3);padding:20px;font-size:13px">Sin datos para el periodo seleccionado</div>';return;}
+  semGraf.innerHTML=asArr.map(a=>{
+    const t=a.visitas||1;
+    const pV=Math.round(a.verde/t*100);
+    const pA=Math.round(a.amarillo/t*100);
+    const pR=Math.round(a.rojo/t*100);
+    return `<div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+        <span style="font-size:13px;font-weight:700;color:var(--text)">${a.nombre}</span>
+        <span style="font-size:11px;color:var(--text3)">${a.visitas} visita${a.visitas!==1?'s':''} · ${a.centros.size} centros</span>
+      </div>
+      <div class="sem-stack">
+        <div class="sem-stack-seg" style="width:${pV}%;background:var(--green)">${pV>10?pV+'%':''}</div>
+        <div class="sem-stack-seg" style="width:${pA}%;background:var(--amber)">${pA>10?pA+'%':''}</div>
+        <div class="sem-stack-seg" style="width:${pR}%;background:var(--red)">${pR>10?pR+'%':''}</div>
+      </div>
+      <div style="display:flex;gap:10px;font-size:11px;color:var(--text3)">
+        <span>🟢 ${a.verde}</span><span>🟡 ${a.amarillo}</span><span>🔴 ${a.rojo}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Gráfica visitas
+  document.getElementById('rep-visitas-graf').innerHTML=asArr.map(a=>`
+    <div class="barra-row">
+      <div class="barra-header">
+        <span class="barra-nombre">${a.nombre}</span>
+        <span class="barra-val">${a.visitas} visita${a.visitas!==1?'s':''}</span>
+      </div>
+      <div class="barra-track">
+        <div class="barra-fill" style="width:${Math.round(a.visitas/maxVisitas*100)}%;background:linear-gradient(90deg,#F1228E,#FD6E29)"></div>
+      </div>
+      <div class="barra-sub"><span>${a.centros.size} centros visitados</span><span>${a.clientas} clientas supervisadas</span></div>
+    </div>`).join('');
+
+  // Gráfica asistencia
+  document.getElementById('rep-asistencia-graf').innerHTML=asArr.map(a=>{
+    const pct=a.totalClientas>0?Math.round(a.clientas/a.totalClientas*100):0;
+    const col=pct>=80?'var(--green)':pct>=60?'var(--amber)':'var(--red)';
+    return `<div class="barra-row">
+      <div class="barra-header">
+        <span class="barra-nombre">${a.nombre}</span>
+        <span class="barra-val" style="color:${col};font-size:14px;font-weight:900">${pct}%</span>
+      </div>
+      <div class="barra-track">
+        <div class="barra-fill" style="width:${pct}%;background:${col}"></div>
+      </div>
+      <div class="barra-sub"><span>${a.clientas} presentes de ${a.totalClientas} totales</span></div>
+    </div>`;
+  }).join('');
+
+  // Centros con alerta
+  const centroAlerta={};
+  datos.filter(v=>v.semaforo==='rojo'||v.semaforo==='amarillo').forEach(v=>{
+    if(!centroAlerta[v.centro]) centroAlerta[v.centro]={nombre:v.centro,asesora:v.asesora,sem:v.semaforo,fecha:v.fecha};
+    else if(new Date(v.fecha)>new Date(centroAlerta[v.centro].fecha)) centroAlerta[v.centro]={nombre:v.centro,asesora:v.asesora,sem:v.semaforo,fecha:v.fecha};
+  });
+  const alertasArr=Object.values(centroAlerta).sort((a,b)=>a.sem==='rojo'?-1:1).slice(0,10);
+  const alertasEl=document.getElementById('rep-alertas-centros');
+  alertasEl.innerHTML=alertasArr.length?alertasArr.map((c,i)=>`
+    <div class="centro-row">
+      <div class="centro-pos">${i+1}</div>
+      <div style="flex:1"><div class="centro-nombre">${c.nombre}</div><div class="centro-asesor">${c.asesora}</div></div>
+      <div class="centro-sem">${c.sem==='rojo'?'🔴':'🟡'}</div>
+    </div>`).join('')
+    :'<div style="text-align:center;color:var(--green);padding:16px;font-size:13px;font-weight:700">🎉 Sin centros con alerta</div>';
+
+  // Top centros
+  const centroTop={};
+  datos.filter(v=>v.semaforo==='verde').forEach(v=>{
+    centroTop[v.centro]=(centroTop[v.centro]||{nombre:v.centro,asesora:v.asesora,count:0});
+    centroTop[v.centro].count++;
+  });
+  const topArr=Object.values(centroTop).sort((a,b)=>b.count-a.count).slice(0,10);
+  document.getElementById('rep-top-centros').innerHTML=topArr.length?topArr.map((c,i)=>`
+    <div class="centro-row">
+      <div class="centro-pos">${i+1}</div>
+      <div style="flex:1"><div class="centro-nombre">${c.nombre}</div><div class="centro-asesor">${c.asesora}</div></div>
+      <div style="font-size:12px;font-weight:800;color:var(--green)">${c.count}x 🟢</div>
+    </div>`).join('')
+    :'<div style="text-align:center;color:var(--text3);padding:16px;font-size:13px">Sin datos suficientes</div>';
+}
+
+function exportarExcelReporte(){
+  let datos=filtrarPorPeriodo(visitas);
+  const asFiltro=document.getElementById('rep-asesor')?.value;
+  if(asFiltro&&asFiltro!=='todas') datos=datos.filter(v=>v.asesora===asFiltro);
+  if(!datos.length){showToast('⚠️ Sin datos para exportar');return;}
+  const wb=XLSX.utils.book_new();
+
+  // Hoja 1: detalle
+  const rows=visitasARows(datos);
+  const ws1=XLSX.utils.json_to_sheet(rows);
+  ws1['!cols']=[{wch:10},{wch:7},{wch:22},{wch:22},{wch:20},{wch:10},{wch:12},{wch:10},{wch:14},{wch:12},{wch:12},{wch:14},{wch:12},{wch:16},{wch:14},{wch:14},{wch:18},{wch:14},{wch:16},{wch:30},{wch:35},{wch:30}];
+  XLSX.utils.book_append_sheet(wb,ws1,'Detalle visitas');
+
+  // Hoja 2: resumen por asesora
+  const byAsesor={};
+  datos.forEach(v=>{
+    if(!v.asesora)return;
+    if(!byAsesor[v.asesora])byAsesor[v.asesora]={Asesora:v.asesora,Visitas:0,'🟢 Verde':0,'🟡 Amarillo':0,'🔴 Rojo':0,'% Verde':'0%','Centros visitados':0,'Clientas supervisadas':0,'% Asistencia promedio':'0%'};
+    const a=byAsesor[v.asesora];
+    a.Visitas++;a['🟢 Verde']+=(v.semaforo==='verde'?1:0);
+    a['🟡 Amarillo']+=(v.semaforo==='amarillo'?1:0);
+    a['🔴 Rojo']+=(v.semaforo==='rojo'?1:0);
+    a['Clientas supervisadas']+=v.clientasPresentes||0;
+  });
+  // Calcular centros y % verde
+  datos.forEach(v=>{
+    if(!v.asesora||!byAsesor[v.asesora])return;
+  });
+  const centrosPorAsesor={};
+  datos.forEach(v=>{if(v.asesora){if(!centrosPorAsesor[v.asesora])centrosPorAsesor[v.asesora]=new Set();centrosPorAsesor[v.asesora].add(v.centro);}});
+  Object.entries(byAsesor).forEach(([a,d])=>{
+    d['Centros visitados']=centrosPorAsesor[a]?centrosPorAsesor[a].size:0;
+    d['% Verde']=d.Visitas?Math.round(d['🟢 Verde']/d.Visitas*100)+'%':'0%';
+    const asistData=datos.filter(v=>v.asesora===a&&v.totalClientas>0);
+    d['% Asistencia promedio']=asistData.length?Math.round(asistData.reduce((s,v)=>s+(v.clientasPresentes/v.totalClientas*100),0)/asistData.length)+'%':'—';
+  });
+  const ws2=XLSX.utils.json_to_sheet(Object.values(byAsesor));
+  ws2['!cols']=[{wch:25},{wch:10},{wch:12},{wch:14},{wch:12},{wch:10},{wch:18},{wch:20},{wch:22}];
+  XLSX.utils.book_append_sheet(wb,ws2,'Resumen por asesora');
+
+  // Hoja 3: centros con alerta
+  const alertRows=datos.filter(v=>v.semaforo==='rojo'||v.semaforo==='amarillo').map(v=>({
+    Centro:v.centro, Asesora:v.asesora, Semáforo:v.semaforo.toUpperCase(),
+    Fecha:new Date(v.fecha).toLocaleDateString('es-MX'),
+    Observaciones:v.observaciones||'', 'Acciones acordadas':v.acciones||''
+  }));
+  if(alertRows.length){
+    const ws3=XLSX.utils.json_to_sheet(alertRows);
+    ws3['!cols']=[{wch:22},{wch:22},{wch:12},{wch:12},{wch:35},{wch:35}];
+    XLSX.utils.book_append_sheet(wb,ws3,'Centros con alerta');
+  }
+
+  const hoy=new Date();
+  XLSX.writeFile(wb,`FOOax_Reporte_Supervisiones_${hoy.getDate()}-${hoy.getMonth()+1}-${hoy.getFullYear()}.xlsx`);
+  showToast('✅ Reporte Excel descargado');
+}
+
+function exportarExcelPorAsesor(){
+  let datos=filtrarPorPeriodo(visitas);
+  if(!datos.length){showToast('⚠️ Sin datos para exportar');return;}
+  const asesoras=[...new Set(datos.map(v=>v.asesora))].filter(Boolean);
+  if(!asesoras.length){showToast('⚠️ Sin asesoras en los datos');return;}
+  const wb=XLSX.utils.book_new();
+  const hoy=new Date();
+  asesoras.forEach(asesor=>{
+    const lista=datos.filter(v=>v.asesora===asesor);
+    const rows=visitasARows(lista);
+    const ws=XLSX.utils.json_to_sheet(rows);
+    ws['!cols']=[{wch:10},{wch:7},{wch:22},{wch:20},{wch:10},{wch:12},{wch:10},{wch:14},{wch:12},{wch:12},{wch:14},{wch:12},{wch:16},{wch:14},{wch:14},{wch:18},{wch:14},{wch:16},{wch:30},{wch:35},{wch:30}];
+    // Nombre de hoja max 31 chars
+    const nombreHoja=asesor.substring(0,28).replace(/[\\/*?[\]]/g,'');
+    XLSX.utils.book_append_sheet(wb,ws,nombreHoja);
+  });
+  XLSX.writeFile(wb,`FOOax_Supervisiones_Por_Asesora_${hoy.getDate()}-${hoy.getMonth()+1}-${hoy.getFullYear()}.xlsx`);
+  showToast('✅ Excel por asesora descargado');
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ── PWA SERVICE WORKER ──
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(()=>console.log('FOOax Supervisión PWA lista'))
+      .catch(e=>console.log('SW:',e));
+  });
+}
+</script>
+</body>
+</html>
